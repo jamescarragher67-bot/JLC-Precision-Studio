@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local virtual environment
+.venv/
+
+# Secrets: never commit real keys
+.env
+
+# Runtime data created by the job desk (database, job folders, event log)
+job_desk/data/
+job_desk/jobs/
+
+# Editors and OS noise
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

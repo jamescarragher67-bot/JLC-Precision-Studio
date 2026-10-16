@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Working · Job desk{% endblock %}
+{% block head %}<meta http-equiv="refresh" content="30">{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="row-between">
+    <h1>Working</h1>
+    <form method="post" action="/run" class="inline">
+      <button type="submit" class="primary">Run pipeline now</button>
+    </form>
+  </div>
+  <p class="muted">Active jobs. This page refreshes every 30 seconds. There is no scheduler yet, so jobs only move when you press Run pipeline now.</p>
+  {% if note %}<p class="notice">{{ note }}</p>{% endif %}
+
+  <div class="counts">
+    {% for s in statuses %}
+      <div class="count">
+        <span class="count-num">{{ counts[s.value] }}</span>
+        <span class="count-label">{{ s.value|replace('_', ' ') }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if jobs %}
+  <table>
+    <thead>
+      <tr>
+        <th>Job</th><th>Title</th><th>Client</th><th>Status</th>
+        <th>Last update</th><th>Retries</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for j in jobs %}
+      <tr>
+        <td><a href="/jobs/{{ j['id'] }}">{{ j['id'] }}</a></td>
+        <td>{{ j['title'] }}{% if j['paused'] %} <span class="tag">paused</span>{% endif %}</td>
+        <td>{{ j['client'] }}</td>
+        <td><span class="status {{ j['status'] }}">{{ j['status']|replace('_', ' ') }}</span></td>
+        <td>{{ j['updated_at'][:19]|replace('T', ' ') }}</td>
+        <td>{{ j['retry_count'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No active jobs.</p>
+  {% endif %}
+</section>
+{% endblock %}

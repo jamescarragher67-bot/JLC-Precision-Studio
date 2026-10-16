@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Job desk{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><a href="/entry">Job desk</a></div>
+
+    <div class="spend">
+      <div class="spend-text">
+        API spend {{ month }}: ${{ '%.2f'|format(spend) }} of ${{ '%.2f'|format(cap) }}
+      </div>
+      <div class="bar" role="meter" aria-label="Monthly API spend against the cap"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ spend_pct }}">
+        <div class="fill{% if spend_pct >= 100 %} over{% endif %}" style="width: {{ spend_pct }}%"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <form method="post" action="/kill-switch" class="inline">
+        <input type="hidden" name="next" value="{{ request.url.path }}">
+        <span class="state {{ 'off' if kill_switch else 'on' }}">{{ 'Paused' if kill_switch else 'Running' }}</span>
+        <button type="submit">{{ 'Resume new jobs' if kill_switch else 'Pause new jobs' }}</button>
+      </form>
+      <a href="{{ fiverr_url }}" target="_blank" rel="noopener noreferrer">Open Fiverr</a>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <a href="/entry" class="{{ 'current' if active == 'entry' }}">Job entry</a>
+    <a href="/working" class="{{ 'current' if active == 'working' }}">Working</a>
+    <a href="/finished" class="{{ 'current' if active == 'finished' }}">Finished</a>
+    <a href="/finance" class="{{ 'current' if active == 'finance' }}">Finance</a>
+  </nav>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Finished · Job desk{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>Finished</h1>
+  <p class="muted">Delivered and paid jobs. Token cost is summed from the API call log, in USD.</p>
+
+  {% if rows %}
+  <table>
+    <thead>
+      <tr>
+        <th>Job</th><th>Title</th><th>Client</th><th>Status</th>
+        <th class="num">Price (AUD)</th><th class="num">Token cost (USD)</th><th class="num">Revisions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      {% set j = row.job %}
+      <tr>
+        <td><a href="/jobs/{{ j['id'] }}">{{ j['id'] }}</a></td>
+        <td>{{ j['title'] }}</td>
+        <td>{{ j['client'] }}</td>
+        <td><span class="status {{ j['status'] }}">{{ j['status'] }}</span></td>
+        <td class="num">{{ '%.2f'|format(j['price']) }}</td>
+        <td class="num">{{ '%.4f'|format(row.token_cost) }}</td>
+        <td class="num">{{ j['revision_count'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">Nothing delivered or paid yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

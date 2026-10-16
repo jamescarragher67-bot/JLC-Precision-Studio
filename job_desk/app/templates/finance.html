@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Finance · Job desk{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="row-between">
+    <h1>Finance</h1>
+    <form method="get" action="/finance" class="inline">
+      <label>Month <input type="month" name="month" value="{{ month }}"></label>
+      <button type="submit">Show</button>
+    </form>
+  </div>
+
+  {% if import_result %}
+    <p class="notice">
+      CSV import: {{ import_result.added }} added, {{ import_result.duplicates }} already present,
+      {{ import_result.rejected }} rejected.
+    </p>
+  {% endif %}
+
+  <div class="counts">
+    <div class="count"><span class="count-num">${{ '%.2f'|format(totals['in']) }}</span><span class="count-label">money in (AUD)</span></div>
+    <div class="count"><span class="count-num">${{ '%.2f'|format(totals['out']) }}</span><span class="count-label">money out (AUD)</span></div>
+    <div class="count"><span class="count-num">${{ '%.2f'|format(totals['net']) }}</span><span class="count-label">net (AUD)</span></div>
+    <div class="count"><span class="count-num">${{ '%.2f'|format(api_spend_usd) }}</span><span class="count-label">API spend (USD, not in out)</span></div>
+  </div>
+  <p class="muted">
+    API spend is recorded in USD and is not added to money out until an exchange rate is decided.
+  </p>
+</section>
+
+<section class="card">
+  <h2>Manual entry</h2>
+  <form method="post" action="/finance/manual" class="grid">
+    <label>Date <input type="date" name="entry_date" required></label>
+    <label>Kind
+      <select name="kind">
+        <option value="in">Money in</option>
+        <option value="out">Money out</option>
+      </select>
+    </label>
+    <label>Category <input type="text" name="category" maxlength="60"></label>
+    <label>Amount (AUD) <input type="number" name="amount_aud" step="0.01" min="0" required></label>
+    <label class="wide">Description <input type="text" name="description" maxlength="200"></label>
+    <div class="wide actions"><button type="submit" class="primary">Add entry</button></div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Fiverr CSV import</h2>
+  <p class="notice">
+    The column mapping below is a guess and is not confirmed. Change <code>FIVERR_CSV_MAPPING</code>
+    in <code>app/config.py</code> to match a real export. Rows whose transaction ID already exists are skipped.
+  </p>
+  <dl class="mapping">
+    {% for key, value in mapping.items() %}
+      <dt>{{ key }}</dt><dd><code>{{ value }}</code></dd>
+    {% endfor %}
+  </dl>
+  <form method="post" action="/finance/import" enctype="multipart/form-data" class="inline">
+    <input type="file" name="csv_file" accept=".csv,text/csv" required>
+    <button type="submit">Import CSV</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Entries for {{ month }}</h2>
+  {% if entries %}
+  <table>
+    <thead>
+      <tr><th>Date</th><th>Kind</th><th>Category</th><th>Description</th><th class="num">Amount (AUD)</th><th>Source</th></tr>
+    </thead>
+    <tbody>
+      {% for e in entries %}
+      <tr>
+        <td>{{ e['date'] }}</td>
+        <td>{{ 'in' if e['kind'] == 'in' else 'out' }}</td>
+        <td>{{ e['category'] }}</td>
+        <td>{{ e['description'] }}</td>
+        <td class="num">{{ '%.2f'|format(e['amount_aud']) }}</td>
+        <td>{{ e['source'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No entries this month.</p>
+  {% endif %}
+</section>
+{% endblock %}

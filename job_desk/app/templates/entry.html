@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Job entry · Job desk{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>New job</h1>
+  <p class="muted">
+    Saving creates the job, its folders, and the typed measurements, then sets the status to intake.
+    Find the order on
+    <a href="{{ fiverr_url }}" target="_blank" rel="noopener noreferrer">Fiverr</a>
+    (opens in a new tab). Copy the details in by hand.
+  </p>
+
+  <form method="post" action="/entry" enctype="multipart/form-data" class="grid">
+    <label>Client
+      <input type="text" name="client" required maxlength="120">
+    </label>
+    <label>Fiverr order number
+      <input type="text" name="fiverr_order_no" maxlength="60">
+    </label>
+
+    <label class="wide">Order text
+      <textarea name="order_text" rows="6" required></textarea>
+    </label>
+
+    <fieldset class="wide">
+      <legend>Typed measurements (mm)</legend>
+      <label>Length
+        <input type="number" name="length_mm" step="any" min="0.001" required>
+      </label>
+      <label>Width
+        <input type="number" name="width_mm" step="any" min="0.001" required>
+      </label>
+      <label>Hole diameter
+        <input type="number" name="hole_diameter_mm" step="any" min="0.001" required>
+      </label>
+    </fieldset>
+
+    <label>Price (AUD)
+      <input type="number" name="price" step="0.01" min="0" required>
+    </label>
+    <label>Deadline
+      <input type="date" name="deadline" required>
+    </label>
+
+    <label class="wide">Sketch (optional, up to 10 MB: png, jpg, pdf, dxf, svg)
+      <input type="file" name="sketch" accept=".png,.jpg,.jpeg,.pdf,.dxf,.svg">
+    </label>
+
+    <div class="wide actions">
+      <button type="submit" class="primary">Create job</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
